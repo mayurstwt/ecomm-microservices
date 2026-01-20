@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "target": "ES2022",       /* Recommended for Node 20 */
+    "module": "CommonJS",
+    "rootDir": "src",
+    "outDir": "dist",
+    "strict": true,
+    "skipLibCheck": true      /* Recommended to avoid type errors in libraries */
+  },
+  "include": [
+    "src/**/*"                /* 👈 ONLY compile files inside src */
+  ],
+  "exclude": [
+    "node_modules",
+    "prisma.config.ts",       /* 👈 Ignore this config file during build */
+  ]
+}
