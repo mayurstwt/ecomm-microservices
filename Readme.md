@@ -32,7 +32,7 @@ The system consists of independent services orchestrated using Docker Compose:
 
 1.  **Clone the repository**
     ```bash
-    git clone <repository-url>
+    git clone https://github.com/mayurstwt/ecomm-microservices
     cd ecommerce-microservices
     ```
 
