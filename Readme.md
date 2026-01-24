@@ -1,178 +1,79 @@
-# Daily Restart & Resume Guide (Auth Microservice)
+# Ecommerce Microservices
 
-This document explains **exactly** how to stop, resume, and safely continue work on the e‑commerce auth microservice after shutting down your laptop.
+A microservices-based ecommerce backend application built with Node.js, TypeScript, and Docker.
 
----
+## 🏗 Architecture
 
-## Assumptions
+The system consists of independent services orchestrated using Docker Compose:
 
-* Docker Desktop is installed
-* You are working inside the same project repository
-* No data reset is required
-* You are using Docker Compose
+*   **API Gateway** (Nginx): The entry point for all client requests, routing traffic to appropriate services.
+*   **Auth Service**: Handles user authentication and authorization using PostgreSQL.
+*   **Product Service**: Manages product catalog and inventory using MongoDB.
 
-Project root contains `docker-compose.yml`.
+## 🛠 Tech Stack
 
----
+*   **Runtime**: Node.js
+*   **Language**: TypeScript
+*   **Databases**:
+    *   PostgreSQL (Auth Service)
+    *   MongoDB (Product Service)
+*   **Infrastructure**: Docker, Docker Compose
+*   **ORM**: Prisma
+*   **Gateway**: Nginx
 
-## 🚀 Daily Start (After Laptop Shutdown)
+## 🚀 Getting Started
 
-### 1️⃣ Start Docker Desktop (Manual)
+### Prerequisites
 
-* Open **Docker Desktop**
-* Wait until it shows **“Docker is running”**
+*   **Docker** and **Docker Compose** installed on your machine.
+*   **Node.js** (optional, for local development outside containers).
 
-> Docker CLI commands will fail or behave unpredictably if Docker Desktop is not running.
+### Installation & Running
 
----
+1.  **Clone the repository**
+    ```bash
+    git clone <repository-url>
+    cd ecommerce-microservices
+    ```
 
-### 2️⃣ Navigate to Project Root
+2.  **Environment Setup**
+    The services communicate via Docker networking. Ensure `.env` files are present in the service directories if customized configuration is needed.
+    *   `services/auth-service/.env`
+    *   `services/product-service/.env`
+    
+    *Note: The `docker-compose.yml` already handles most environment variables for a quick start.*
 
-```bash
-cd ~/Desktop/Projects/small-builds/ecommerce-microservices
-```
+3.  **Start the Application**
+    Run the following command to build and start all services:
+    ```bash
+    docker-compose up --build
+    ```
 
----
+    This will spin up:
+    *   `api-gateway` on port `8080`
+    *   `auth-service` on port `4001`
+    *   `product-service` (internal)
+    *   `auth-db` (Postgres) on port `5433`
+    *   `product-db` (Mongo) and `mongo-init` script
 
-### 3️⃣ Start All Services (Main Command)
+4.  **Access the Services**
 
-```bash
-docker compose up -d
-```
+    The API Gateway is available at `http://localhost:8080`.
 
-**What this does:**
+    *   **Auth Routes**: `http://localhost:8080/auth/...` (Proxied to Auth Service)
+    *   **Product Routes**: `http://localhost:8080/products/...` (Proxied to Product Service)
 
-* Starts `auth-db` (PostgreSQL)
-* Starts `auth-service` (Node + Prisma)
-* Reuses existing Docker images
-* Does **not** rebuild anything
-
-This is the **primary resume command**.
-
----
-
-### 4️⃣ Verify Services Are Running (Recommended)
-
-```bash
-docker compose ps
-```
-
-Expected output:
-
-```
-auth-db        Up
-auth-service   Up
-```
-
-If both services are `Up`, you are exactly where you left off.
-
----
-
-### 5️⃣ (Optional) View Logs
-
-```bash
-docker compose logs -f auth-service
-```
-
-Stop viewing logs with:
+## 📂 Project Structure
 
 ```
-Ctrl + C
+├── api-gateway/         # Nginx configuration and Dockerfile
+├── services/
+│   ├── auth-service/    # User authentication service (Express + Prisma + Postgres)
+│   └── product-service/ # Product management service (Express + Prisma + Mongo)
+└── docker-compose.yml   # Container orchestration
 ```
 
----
+## 🐛 Troubleshooting
 
-## ❌ Commands You Do NOT Run Daily
-
-Only run these **when something changes**.
-
-| Command                  | When to Run                             |
-| ------------------------ | --------------------------------------- |
-| `docker compose build`   | Dockerfile or system dependency changes |
-| `npm install`            | `package.json` changes                  |
-| `npx prisma migrate dev` | Prisma schema changes                   |
-| `npx prisma generate`    | Auto-handled by Prisma                  |
-| `docker compose down`    | You want to stop everything manually    |
-
----
-
-## 🔁 Common Development Scenarios
-
-### 🧠 Scenario 1: Backend Code Changed (TypeScript / JS)
-
-```bash
-docker compose up -d --build
-```
-
-Rebuilds `auth-service` image and restarts it.
-
----
-
-### 🧠 Scenario 2: Prisma Schema Changed
-
-```bash
-docker compose exec auth-service npx prisma migrate dev --name <migration_name>
-```
-
-Example:
-
-```bash
-docker compose exec auth-service npx prisma migrate dev --name add_refresh_token
-```
-
----
-
-### 🧠 Scenario 3: Something Feels Broken
-
-Safe reset (does **not** delete DB data):
-
-```bash
-docker compose down
-docker compose up -d
-```
-
----
-
-## 🧠 One‑Line Mental Model
-
-> **Start work → `docker compose up -d`**
-> **Stop work → Close laptop**
-
-Everything else is situational.
-
----
-
-## 📌 Minimal Cheat Sheet
-
-```bash
-# Start where I left off
-docker compose up -d
-
-# Check status
-docker compose ps
-
-# See logs
-docker compose logs -f auth-service
-
-# Rebuild after code change
-docker compose up -d --build
-
-# Run Prisma migration
-docker compose exec auth-service npx prisma migrate dev --name <name>
-```
-
----
-
-## ✅ You Are Safe If
-
-* Docker Desktop is running
-* You run `docker compose up -d`
-* You see both services as `Up`
-
-That’s it. No reconfiguration needed.
-
----
-
-**Next recommended step:**
-
-* Auth Service Phase 2 — Register & Login APIs
+*   **Database Constraints**: If services fail to connect to databases immediately on startup, give it a few seconds. The `depends_on` condition is set, but databases might take a moment to be ready.
+*   **Port Conflicts**: Ensure ports `8080`, `4001`, and `5433` are free on your host machine.
