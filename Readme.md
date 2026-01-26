@@ -9,6 +9,7 @@ The system consists of independent services orchestrated using Docker Compose:
 *   **API Gateway** (Nginx): The entry point for all client requests, routing traffic to appropriate services.
 *   **Auth Service**: Handles user authentication and authorization using PostgreSQL.
 *   **Product Service**: Manages product catalog and inventory using MongoDB.
+*   **Cart Service**: Manages user shopping carts using Redis.
 
 ## 🛠 Tech Stack
 
@@ -17,6 +18,7 @@ The system consists of independent services orchestrated using Docker Compose:
 *   **Databases**:
     *   PostgreSQL (Auth Service)
     *   MongoDB (Product Service)
+    *   Redis (Cart Service)
 *   **Infrastructure**: Docker, Docker Compose
 *   **ORM**: Prisma
 *   **Gateway**: Nginx
@@ -40,6 +42,7 @@ The system consists of independent services orchestrated using Docker Compose:
     The services communicate via Docker networking. Ensure `.env` files are present in the service directories if customized configuration is needed.
     *   `services/auth-service/.env`
     *   `services/product-service/.env`
+    *   `services/cart-service/.env`
     
     *Note: The `docker-compose.yml` already handles most environment variables for a quick start.*
 
@@ -55,6 +58,8 @@ The system consists of independent services orchestrated using Docker Compose:
     *   `product-service` (internal)
     *   `auth-db` (Postgres) on port `5433`
     *   `product-db` (Mongo) and `mongo-init` script
+    *   `cart-service` (internal)
+    *   `cart-db` (Redis)
 
 4.  **Access the Services**
 
@@ -62,6 +67,7 @@ The system consists of independent services orchestrated using Docker Compose:
 
     *   **Auth Routes**: `http://localhost:8080/auth/...` (Proxied to Auth Service)
     *   **Product Routes**: `http://localhost:8080/products/...` (Proxied to Product Service)
+    *   **Cart Routes**: `http://localhost:8080/cart/...` (Proxied to Cart Service)
 
 ## 📂 Project Structure
 
@@ -69,7 +75,8 @@ The system consists of independent services orchestrated using Docker Compose:
 ├── api-gateway/         # Nginx configuration and Dockerfile
 ├── services/
 │   ├── auth-service/    # User authentication service (Express + Prisma + Postgres)
-│   └── product-service/ # Product management service (Express + Prisma + Mongo)
+│   ├── product-service/ # Product management service (Express + Prisma + Mongo)
+│   └── cart-service/    # Shopping cart service (Express + Redis)
 └── docker-compose.yml   # Container orchestration
 ```
 
