@@ -42,6 +42,18 @@ services:
         })
       '
       "
+  
+  cart-service:
+    build: ./services/cart-service
+    env_file:
+      - ./services/cart-service/.env
+    depends_on:
+      - cart-db
+      - product-service
+
+  cart-db:
+    image: redis:7
+
 
   auth-db:
     image: postgres:15
