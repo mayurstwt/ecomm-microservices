@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   api-gateway:
     build: ./api-gateway
@@ -21,7 +19,7 @@ services:
     build: ./services/product-service
     env_file:
       - ./services/product-service/.env
-    depends_on: 
+    depends_on:
       - product-db
 
   product-db:
@@ -42,9 +40,11 @@ services:
         })
       '
       "
-  
+
   cart-service:
     build: ./services/cart-service
+    ports:
+      - "4003:4003"
     env_file:
       - ./services/cart-service/.env
     depends_on:
@@ -54,6 +54,20 @@ services:
   cart-db:
     image: redis:7
 
+  order-service:
+    build: ./services/order-service
+    env_file:
+      - ./services/order-service/.env
+    depends_on:
+      - order-db
+      - cart-service
+
+  order-db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: orderdb
 
   auth-db:
     image: postgres:15
