@@ -10,13 +10,14 @@ The system consists of independent services orchestrated using Docker Compose:
 *   **Auth Service**: Handles user authentication and authorization using PostgreSQL.
 *   **Product Service**: Manages product catalog and inventory using MongoDB.
 *   **Cart Service**: Manages user shopping carts using Redis.
+*   **Order Service**: Manages user orders using PostgreSQL.
 
 ## 🛠 Tech Stack
 
 *   **Runtime**: Node.js
 *   **Language**: TypeScript
 *   **Databases**:
-    *   PostgreSQL (Auth Service)
+    *   PostgreSQL (Auth Service, Order Service)
     *   MongoDB (Product Service)
     *   Redis (Cart Service)
 *   **Infrastructure**: Docker, Docker Compose
@@ -43,6 +44,7 @@ The system consists of independent services orchestrated using Docker Compose:
     *   `services/auth-service/.env`
     *   `services/product-service/.env`
     *   `services/cart-service/.env`
+    *   `services/order-service/.env`
     
     *Note: The `docker-compose.yml` already handles most environment variables for a quick start.*
 
@@ -60,6 +62,8 @@ The system consists of independent services orchestrated using Docker Compose:
     *   `product-db` (Mongo) and `mongo-init` script
     *   `cart-service` (internal)
     *   `cart-db` (Redis)
+    *   `order-service` (internal)
+    *   `order-db` (Postgres)
 
 4.  **Access the Services**
 
@@ -68,6 +72,7 @@ The system consists of independent services orchestrated using Docker Compose:
     *   **Auth Routes**: `http://localhost:8080/auth/...` (Proxied to Auth Service)
     *   **Product Routes**: `http://localhost:8080/products/...` (Proxied to Product Service)
     *   **Cart Routes**: `http://localhost:8080/cart/...` (Proxied to Cart Service)
+    *   **Order Routes**: `http://localhost:8080/orders/...` (Proxied to Order Service)
 
 ## 📂 Project Structure
 
@@ -76,7 +81,8 @@ The system consists of independent services orchestrated using Docker Compose:
 ├── services/
 │   ├── auth-service/    # User authentication service (Express + Prisma + Postgres)
 │   ├── product-service/ # Product management service (Express + Prisma + Mongo)
-│   └── cart-service/    # Shopping cart service (Express + Redis)
+│   ├── cart-service/    # Shopping cart service (Express + Redis)
+│   └── order-service/   # Order management service (Express + Prisma + Postgres)
 └── docker-compose.yml   # Container orchestration
 ```
 
